@@ -5,9 +5,10 @@ import dotenv from 'dotenv';
 
 const app = express();
 
-const PORT = 4000;
-
 dotenv.config();
+
+const PORT = process.env.PORT;
+
 
 // const movies = [
 //     {
@@ -136,6 +137,20 @@ app.get('/movies/:id', async (req, res) => {
     const { id } = req.params;
     const movie = await client.db('B33WD').collection('movies').findOne({id: id});
     movie ? res.send(movie) : res.status(404).send('Movie not found');
+})
+
+app.delete('/movies/:id', async (req, res) => {
+    const { id } = req.params;
+    const movie = await client.db('B33WD').collection('movies').deleteOne({id: id});
+    movie.deletedCount > 0 ? res.send(movie) : res.status(404).send('Movie not found');
+})
+
+app.put('/movies/:id', async (req, res) => {
+    const data = req.body;
+    const { id } = req.params;
+    console.log(data);
+    const result = await client.db('B33WD').collection('movies').updateOne({id: id}, {$set: data});
+    res.send(result);
 })
 
 app.post('/movies', async (req, res) => {
